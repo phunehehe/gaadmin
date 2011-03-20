@@ -29,8 +29,10 @@
 # under either the MPL or the GPL License.
 
 
+from mechanize import LinkNotFoundError
 from zope.testbrowser.browser import Browser
 import itertools
+import re
 
 
 class Administrator():
@@ -59,6 +61,23 @@ class Administrator():
     def go_to_group(self, group):
         '''Open the groups's page.'''
         self.browser.open('https://www.google.com/a/cpanel/%s/Group?groupId=%s' % (self.domain, group))
+
+
+    def users_in_group(self, group):
+        '''Return the set of users in the group.'''
+
+        self.go_to_group(group)
+        pattern = re.compile('<td>(\\S+@.\\S+)</td>')
+
+        users = set(re.findall(pattern, self.browser.contents))
+        try:
+            while True:
+                self.browser.getLink(text='Next').click()
+                users.update(re.findall(pattern, self.browser.contents))
+        except LinkNotFoundError:
+            pass
+
+        return users
 
 
     def add_user_to_group(self, user, group):
