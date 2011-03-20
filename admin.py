@@ -69,8 +69,10 @@ class Administrator():
         self.go_to_group(group)
         pattern = re.compile('<td>(\\S+@.\\S+)</td>')
 
+        # Add all users in the current (first page).
         users = set(re.findall(pattern, self.browser.contents))
         try:
+            # Go to next pages and add all of them.
             while True:
                 self.browser.getLink(text='Next').click()
                 users.update(re.findall(pattern, self.browser.contents))
@@ -93,27 +95,4 @@ class Administrator():
         form.getControl(name='members').value = user
         # Click this button to submit the form
         form.getControl(name='add').click()
-
-
-    def user_is_in_group(self, user, group):
-        '''Check if the user belong to the group.
-
-        Not implemented yet.
-
-        '''
-
-        self.go_to_group(group)
-
-        try:
-
-            form = browser.getForm(id='list')
-            #for i in itertools.count():
-                #print i
-
-            # Go to next page and repeat
-            link_to_next_page = browser.getLink(text='Next')
-            link_to_next_page.click()
-
-        except LinkNotFoundError:
-            pass
 
