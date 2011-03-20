@@ -34,15 +34,18 @@ import itertools
 
 
 class Administrator():
+    '''An automated Google Apps administrator.'''
 
 
-    def __init__(self, username, password, domain):
+    def __init__(self, domain, username, password):
+        '''Create an administrator, then log in with the given credentials.'''
         self.domain = domain
         self.browser = Browser()
         self.login(username, password)
 
 
     def login(self, username, password):
+        '''Log in with the given username and password.'''
 
         self.browser.open('https://www.google.com/a/%s/ServiceLogin', self.domain)
         form = browser.getForm(id='gaia_loginform')
@@ -54,10 +57,16 @@ class Administrator():
 
 
     def go_to_group(self, group):
+        '''Open the groups's page.'''
         browser.open('https://www.google.com/a/cpanel/%s/Group?groupId=%s' % (self.domain, group))
 
 
     def add_user_to_group(self, user, group):
+        '''Add the user to the group.
+
+        Currently only one user is added at a time.
+
+        '''
 
         self.go_to_group(group)
 
@@ -68,6 +77,11 @@ class Administrator():
 
 
     def user_is_in_group(self, user, group):
+        '''Check if the user belong to the group.
+
+        Not implemented yet.
+
+        '''
 
         self.go_to_group(group)
 
