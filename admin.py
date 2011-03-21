@@ -35,6 +35,13 @@ import itertools
 import re
 
 
+SAFE_USER_LIST_SIZE = 25
+def split_users(users):
+    '''Split users into smaller groups.'''
+    return (users[i:i + SAFE_USER_LIST_SIZE]
+        for i in xrange(0, len(users), SAFE_USER_LIST_SIZE))
+
+
 class Administrator():
     '''An automated Google Apps administrator.'''
 
@@ -84,17 +91,17 @@ class Administrator():
         return users
 
 
-    def add_user_to_group(self, user, group):
-        '''Add the user to the group.
+    def add_users_to_group(self, users, group):
+        '''Add the users to the group.'''
 
-        Currently only one user is added at a time.
+        unique_users = set(users)
+        current_users = self.users_in_group(group)
+        new_users = current_users - unique_users
 
-        '''
-
-        self.go_to_group(group)
-
-        form = self.browser.getForm(id='addmember')
-        form.getControl(name='members').value = user
-        # Click this button to submit the form
-        form.getControl(name='add').click()
+        for chunk in split_users(new_users):
+            self.go_to_group(group)
+            form = self.browser.getForm(id='addmember')
+            form.getControl(name='members').value = ','.join(chunk)
+            # Click this button to submit the form
+            form.getControl(name='add').click()
 
