@@ -49,7 +49,8 @@ class Administrator():
     def login(self, username, password):
         '''Log in with the given username and password.'''
 
-        self.browser.open('https://www.google.com/a/%s/ServiceLogin' % self.domain)
+        self.browser.open('https://www.google.com/a/%s/ServiceLogin'
+            % self.domain)
         form = self.browser.getForm(id='gaia_loginform')
 
         # domain is automatically added
@@ -60,7 +61,8 @@ class Administrator():
 
     def go_to_group(self, group):
         '''Open the groups's page.'''
-        self.browser.open('https://www.google.com/a/cpanel/%s/Group?groupId=%s' % (self.domain, group))
+        self.browser.open('https://www.google.com/a/cpanel/%s/Group?groupId=%s'
+            % (self.domain, group))
 
 
     def users_in_group(self, group):
