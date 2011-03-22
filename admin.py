@@ -76,15 +76,18 @@ class Administrator():
         '''Return the set of users in the group.'''
 
         self.go_to_group(group)
-        pattern = re.compile('<td>(\\S+@.\\S+)</td>')
+        stripping_pattern = re.compile('<.*?>')
+        stripped_page = stripping_pattern.sub('', self.browser.contents)
 
         # Add all users in the current (first page).
-        users = set(re.findall(pattern, self.browser.contents))
+        email_pattern = re.compile('\\S+@\\S+')
+        users = set(email_pattern.findall(stripped_page))
         try:
             # Go to next pages and add all of them.
             while True:
                 self.browser.getLink(text='Next').click()
-                users.update(re.findall(pattern, self.browser.contents))
+                stripped_page = stripping_pattern.sub('', self.browser.contents)
+                users.update(email_pattern.findall(stripped_page))
         except LinkNotFoundError:
             pass
 
