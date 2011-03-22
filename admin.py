@@ -42,6 +42,11 @@ def split_users(users):
         for i in xrange(0, len(users), SAFE_USER_LIST_SIZE))
 
 
+def emails_in_html(html):
+    stripped_page = re.sub('<.*?>', '', html)
+    return set(re.findall('\\S+@\\S+', stripped_page))
+
+
 class Administrator():
     '''An automated Google Apps administrator.'''
 
@@ -76,18 +81,14 @@ class Administrator():
         '''Return the set of users in the group.'''
 
         self.go_to_group(group)
-        stripping_pattern = re.compile('<.*?>')
-        stripped_page = stripping_pattern.sub('', self.browser.contents)
 
         # Add all users in the current (first page).
-        email_pattern = re.compile('\\S+@\\S+')
-        users = set(email_pattern.findall(stripped_page))
+        users = emails_in_html(self.browser.contents)
         try:
             # Go to next pages and add all of them.
             while True:
                 self.browser.getLink(text='Next').click()
-                stripped_page = stripping_pattern.sub('', self.browser.contents)
-                users.update(email_pattern.findall(stripped_page))
+                users.update(emails_in_html(self.browser.contents))
         except LinkNotFoundError:
             pass
 
