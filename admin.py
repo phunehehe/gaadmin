@@ -38,7 +38,8 @@ import re
 SAFE_USER_LIST_SIZE = 25
 def split_users(users):
     '''Split users into smaller groups.'''
-    return (users[i:i + SAFE_USER_LIST_SIZE]
+    user_list = list(users)
+    return (user_list[i:i + SAFE_USER_LIST_SIZE]
         for i in xrange(0, len(users), SAFE_USER_LIST_SIZE))
 
 
@@ -100,10 +101,10 @@ class Administrator():
 
         unique_users = set(users)
         current_users = self.users_in_group(group)
-        new_users = current_users - unique_users
+        new_users = unique_users - current_users
 
+        self.go_to_group(group)
         for chunk in split_users(new_users):
-            self.go_to_group(group)
             form = self.browser.getForm(id='addmember')
             form.getControl(name='members').value = ','.join(chunk)
             # Click this button to submit the form
