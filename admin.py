@@ -29,6 +29,7 @@
 # under either the MPL or the GPL License.
 
 
+from lxml import html
 from mechanize import LinkNotFoundError
 from zope.testbrowser.browser import Browser
 import itertools
@@ -109,4 +110,24 @@ class Administrator():
             form.getControl(name='members').value = ','.join(chunk)
             # Click this button to submit the form
             form.getControl(name='add').click()
+
+
+    def remove_users_from_group(self, users, group):
+        '''Remove the users from the group.'''
+
+        unique_users = set(users)
+        self.go_to_group(group)
+
+        tree = html.fromstring(self.browser.contents)
+        form = self.browser.getForm(id='list')
+
+        for hidden_input in tree.cssselect('form#list td input[type="hidden"]'):
+            print 'checking', hidden_input.value
+            if hidden_input.value in unique_users:
+                print 'removing', hidden_input.value
+                checkbox = form.getControl(name=hidden_input.getnext().name)
+                print checkbox.mech_control
+
+        print 'submitting'
+        form.getControl(name='remove', index=0).click()
 
